@@ -108,7 +108,7 @@ function extractPrefName(meshName) {
   return m ? m[1] : meshName;
 }
 
-export default function JapanMapFBX(props) {
+export default function JapanMapFBX({ orbitControlsRef, ...props }) {
   const fbx = useLoader(FBXLoader, "/日本地図ローポリ調整フリーズ前.fbx");
   const [hovered, setHovered] = useState(null);
   const [mouse, setMouse] = useState({ x: 0, y: 0 });
@@ -154,10 +154,14 @@ export default function JapanMapFBX(props) {
       const scale = 0.017;
       const offset = new THREE.Vector3(-7, 0, -9);
       const scaled = center.clone().multiplyScalar(scale).add(offset);
-      // 真上から見下ろす: x, y+距離, z
-      camera.position.set(scaled.x, scaled.y + 6, scaled.z);
-      camera.up.set(0, 1, 0); // デフォルトの上方向
+      camera.position.set(scaled.x, scaled.y + 1.5, scaled.z + 0.05);
+      camera.up.set(0, 1, 0);
       camera.lookAt(scaled.x, scaled.y, scaled.z);
+      // OrbitControlsのtargetも必ずセット
+      if (orbitControlsRef && orbitControlsRef.current) {
+        orbitControlsRef.current.target.set(scaled.x, scaled.y, scaled.z);
+        orbitControlsRef.current.update();
+      }
     }
   };
 
