@@ -24,10 +24,13 @@ function App() {
         <select
           value={selectedPref}
           onChange={(e) => setSelectedPref(e.target.value)}
+          style={{ fontSize: "1.5rem", padding: "0.5em 1em", minWidth: 200 }}
         >
-          <option value="">都道府県を選択</option>
+          <option value="" style={{ fontSize: "1.5rem", fontWeight: "bold" }}>
+            都道府県を選択
+          </option>
           {PREFECTURE_LIST.map((pref) => (
-            <option key={pref} value={pref}>
+            <option key={pref} value={pref} style={{ fontSize: "1.2rem" }}>
               {pref}
             </option>
           ))}
