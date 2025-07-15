@@ -108,7 +108,16 @@ function extractPrefName(meshName) {
   return m ? m[1] : meshName;
 }
 
-export default function JapanMapFBX({ orbitControlsRef, ...props }) {
+// 都道府県名リストを外部にexport
+export const PREFECTURE_LIST = Array.from(
+  new Set(Object.values(regionToPrefectures).flat())
+);
+
+export default function JapanMapFBX({
+  orbitControlsRef,
+  selectedPref,
+  ...props
+}) {
   const fbx = useLoader(FBXLoader, "/日本地図ローポリ調整フリーズ前.fbx");
   const [hovered, setHovered] = useState(null);
   const [mouse, setMouse] = useState({ x: 0, y: 0 });
@@ -165,6 +174,17 @@ export default function JapanMapFBX({ orbitControlsRef, ...props }) {
     }
   };
 
+  // selectedPrefが変化したら該当都道府県Meshにカメラ移動＆ハイライト
+  useEffect(() => {
+    if (!selectedPref) return;
+    // 該当Meshを探す
+    const mesh = meshes.find((m) => extractPrefName(m.name) === selectedPref);
+    if (mesh) {
+      setHovered(mesh.name); // ハイライト
+      moveCameraToMeshCenter(mesh); // カメラ移動
+    }
+  }, [selectedPref, meshes]);
+
   return (
     <>
       <group scale={[0.017, 0.017, 0.017]} position={[-7, 0, -9]} {...props}>
@@ -182,7 +202,11 @@ export default function JapanMapFBX({ orbitControlsRef, ...props }) {
                 ) {
                   mat = mesh.material.clone();
                   if (mat.map) mat.map = null;
-                  if (hovered === mesh.name) {
+                  if (
+                    hovered === mesh.name ||
+                    (selectedPref &&
+                      extractPrefName(mesh.name) === selectedPref)
+                  ) {
                     mat.color = new THREE.Color(1, 1, 1); // 白
                     mat.opacity = 0.7;
                     mat.transparent = true;
