@@ -163,7 +163,17 @@ export default function JapanMapFBX({
       const scale = 0.017;
       const offset = new THREE.Vector3(-7, 0, -9);
       const scaled = center.clone().multiplyScalar(scale).add(offset);
-      camera.position.set(scaled.x, scaled.y + 1.5, scaled.z + 0.05);
+      // 北海道・鹿児島県・沖縄県だけズームアウト
+      const prefName = extractPrefName(mesh.name);
+      if (
+        prefName === "北海道" ||
+        prefName === "鹿児島県" ||
+        prefName === "沖縄県"
+      ) {
+        camera.position.set(scaled.x, scaled.y + 4.5, scaled.z + 1.2);
+      } else {
+        camera.position.set(scaled.x, scaled.y + 1.5, scaled.z + 0.05);
+      }
       camera.up.set(0, 1, 0);
       camera.lookAt(scaled.x, scaled.y, scaled.z);
       // OrbitControlsのtargetも必ずセット
@@ -176,7 +186,18 @@ export default function JapanMapFBX({
 
   // selectedPrefが変化したら該当都道府県Meshにカメラ移動＆ハイライト
   useEffect(() => {
-    if (!selectedPref) return;
+    if (!selectedPref) {
+      // 初期カメラ位置に戻す
+      camera.position.set(0, 20, 0);
+      camera.up.set(0, 1, 0);
+      camera.lookAt(0, 0, 0);
+      if (orbitControlsRef && orbitControlsRef.current) {
+        orbitControlsRef.current.target.set(0, 0, 0);
+        orbitControlsRef.current.update();
+      }
+      setHovered(null);
+      return;
+    }
     // 該当Meshを探す
     const mesh = meshes.find((m) => extractPrefName(m.name) === selectedPref);
     if (mesh) {
