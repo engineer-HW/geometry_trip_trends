@@ -36,6 +36,25 @@ function App() {
           ))}
         </select>
       </div>
+      {/* 右上に都道府県ラベルを固定表示（削除） */}
+      {/* {selectedPref && (
+        <div style={{
+          position: "absolute",
+          top: 20,
+          right: 20,
+          zIndex: 20,
+          background: "rgba(0,0,0,0.7)",
+          color: "#fff",
+          padding: "0.7em 1.5em",
+          borderRadius: "8px",
+          fontSize: "2rem",
+          fontWeight: "bold",
+          letterSpacing: "0.1em",
+          boxShadow: "0 2px 8px rgba(0,0,0,0.2)"
+        }}>
+          {selectedPref}
+        </div>
+      )} */}
       <Canvas
         camera={{
           position: [0, 20, 0],

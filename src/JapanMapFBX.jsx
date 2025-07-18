@@ -273,6 +273,46 @@ export default function JapanMapFBX({
               })}
           </group>
         ))}
+        {/* 選択中都道府県のラベルを3D空間上に表示 */}
+        {selectedPref &&
+          (() => {
+            // 該当Meshを探す
+            const mesh = meshes.find(
+              (m) => extractPrefName(m.name) === selectedPref
+            );
+            if (!mesh) return null;
+            const center = meshCenters[mesh.uuid];
+            if (!center) return null;
+            // グループのスケール・位置を考慮
+            const scale = 0.017;
+            const offset = new THREE.Vector3(-7, 0, -9);
+            const scaled = center.clone().multiplyScalar(scale).add(offset);
+            // ラベルを少し上に浮かせる
+            const labelPos = [scaled.x, scaled.y + 0.7, scaled.z];
+            return (
+              <Html
+                position={labelPos}
+                center
+                style={{ pointerEvents: "none" }}
+              >
+                <div
+                  style={{
+                    background: "rgba(0,0,0,0.7)",
+                    color: "#fff",
+                    padding: "0.5em 1.2em",
+                    borderRadius: "8px",
+                    fontSize: "2rem",
+                    fontWeight: "bold",
+                    letterSpacing: "0.1em",
+                    boxShadow: "0 2px 8px rgba(0,0,0,0.2)",
+                    whiteSpace: "nowrap",
+                  }}
+                >
+                  {selectedPref}
+                </div>
+              </Html>
+            );
+          })()}
       </group>
       {hovered && (
         <Html>
