@@ -7,6 +7,11 @@ function App() {
   const controlsRef = useRef();
   // 都道府県名の選択状態を追加
   const [selectedPref, setSelectedPref] = useState("");
+  // 仮ピンデータ
+  const [pins] = useState([
+    { prefecture: "東京都", label: "仮ピン1" },
+    { prefecture: "大阪府", label: "仮ピン2" },
+  ]);
   return (
     <div style={{ width: "100vw", height: "100vh" }}>
       {/* 検索UI: セレクトボックス */}
@@ -67,10 +72,11 @@ function App() {
         <ambientLight intensity={0.6} />
         <directionalLight position={[10, 10, 5]} intensity={0.8} />
 
-        {/* 選択した都道府県名を渡す */}
+        {/* 選択した都道府県名と仮ピンデータを渡す */}
         <JapanMapFBX
           orbitControlsRef={controlsRef}
           selectedPref={selectedPref}
+          pins={pins}
         />
 
         <OrbitControls

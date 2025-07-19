@@ -116,6 +116,7 @@ export const PREFECTURE_LIST = Array.from(
 export default function JapanMapFBX({
   orbitControlsRef,
   selectedPref,
+  pins = [],
   ...props
 }) {
   const fbx = useLoader(FBXLoader, "/日本地図ローポリ調整フリーズ前.fbx");
@@ -313,6 +314,52 @@ export default function JapanMapFBX({
               </Html>
             );
           })()}
+        {/* 仮ピンを都道府県の中心に立てる */}
+        {pins.map((pin, idx) => {
+          // 該当Meshを探す
+          const mesh = meshes.find(
+            (m) => extractPrefName(m.name) === pin.prefecture
+          );
+          if (!mesh) return null;
+          const center = meshCenters[mesh.uuid];
+          if (!center) return null;
+          // グループのスケール・位置を考慮
+          const scale = 0.017;
+          const offset = new THREE.Vector3(-7, 0, -9);
+          const scaled = center.clone().multiplyScalar(scale).add(offset);
+          // ピンの高さ
+          const pinHeight = 0.7;
+          return (
+            <group key={idx} position={[scaled.x, scaled.y, scaled.z]}>
+              {/* 円柱ピン */}
+              <mesh position={[0, pinHeight / 2, 0]}>
+                <cylinderGeometry args={[0.08, 0.08, pinHeight, 16]} />
+                <meshStandardMaterial color="red" />
+              </mesh>
+              {/* ピンのラベル */}
+              <Html
+                position={[0, pinHeight + 0.3, 0]}
+                center
+                style={{ pointerEvents: "none" }}
+              >
+                <div
+                  style={{
+                    background: "rgba(255,0,0,0.8)",
+                    color: "#fff",
+                    padding: "0.2em 0.7em",
+                    borderRadius: "6px",
+                    fontSize: "1.1rem",
+                    fontWeight: "bold",
+                    whiteSpace: "nowrap",
+                    boxShadow: "0 2px 8px rgba(0,0,0,0.2)",
+                  }}
+                >
+                  {pin.label}
+                </div>
+              </Html>
+            </group>
+          );
+        })}
       </group>
       {hovered && (
         <Html>
